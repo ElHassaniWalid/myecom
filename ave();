@@ -1,0 +1,22 @@
+[90m= [39m[34;4mApp\Models\Product[39;24m {#6058
+    [34mid[39m: [35m1[39m,
+    [34mcategory_id[39m: [35m1[39m,
+    [34mbrand_id[39m: [35m1[39m,
+    [34mpromotion_id[39m: [35m2[39m,
+    [34msku[39m: "[32mIPH-15-PRO[39m",
+    [34mname[39m: "[32miPhone 15 Pro[39m",
+    [34mslug[39m: "[32miphone-15-pro[39m",
+    [34mshort_description[39m: "[32mLe dernier iPhone avec finition titane.[39m",
+    [34mdescription[39m: "[32mDécouvrez l’iPhone 15 Pro, doté d’une puce A17 Pro révolutionnaire.[39m",
+    [34mregular_price[39m: "[32m1299.00[39m",
+    [34mcost_price[39m: "[32m900.00[39m",
+    [34mstock_quantity[39m: [35m25[39m,
+    [34mweight[39m: "[32m0.19[39m",
+    [34mfeatured_image[39m: "[32mhttps://via.placeholder.com/600x400.png?text=iPhone+15[39m",
+    [34mis_visible[39m: [35m1[39m,
+    [34mis_featured[39m: [35m1[39m,
+    [34mdeleted_at[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2026-01-17 20:39:03[39m",
+    [34mupdated_at[39m: "[32m2026-01-17 20:39:03[39m",
+  }
+
