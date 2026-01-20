@@ -4,6 +4,7 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
 // Route pour la page d'accueil qui affiche le catalogue
 Route::get('/', [ProductController::class, 'index'])->name('products.index');
@@ -27,6 +28,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // DÉTAIL (Singulier) -> URL: /admin/category/{slug}
     Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
+
+
+    // Routes pour les PRODUITS 
+    // La route ci-dessous corrige l'erreur 404 pour admin/products 
+    Route::get('/products', [AdminProductController::class, 'index'])->name('products.index');
+    
+    // Routes unitaires au singulier selon tes règles 
+    Route::get('/product/create', [AdminProductController::class, 'create'])->name('product.create');
+    Route::post('/product/store', [AdminProductController::class, 'store'])->name('product.store');
+    
+    // Routes pour l'édition et la mise à jour (Prévues dans le tableau) 
+    Route::get('/product/{id}/edit', [AdminProductController::class, 'edit'])->name('product.edit');
+    Route::put('/product/{id}/update', [AdminProductController::class, 'update'])->name('product.update');
     
 });
 

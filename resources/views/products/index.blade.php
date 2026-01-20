@@ -14,7 +14,7 @@
             @foreach($products as $product)
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
                     {{-- Image du produit --}}
-                    <img src="{{ $product->featured_image }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+                    <img src="{{ asset('storage/' . $product->featured_image) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
                     
                     <div class="p-4">
                         {{-- Marque et Catégorie --}}
