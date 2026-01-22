@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Models\ProductImage;
 
 class ProductController extends Controller
 {
@@ -64,9 +66,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // 1. Récupération du produit ou erreur 404
         $product = Product::findOrFail($id);
 
-        // Validation (SKU unique sauf pour ce produit précis)
+        // 2. Validation des données
         $validated = $request->validate([
             'name' => 'required|max:255',
             'sku' => 'required|unique:products,sku,' . $product->id,
@@ -74,21 +77,30 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
             'featured_image' => 'nullable|image|max:2048',
+            'images.*' => 'nullable|image|max:2048',
         ]);
 
-        // GESTION DES CASES À COCHER (CHECKBOX)
-        // On force la valeur à true/false (ou 1/0) car si décoché, la clé n'existe pas dans $request
+        // 3. GESTION DES CASES À COCHER (RÉ-INTÉGRÉ)
+        // On force la valeur car si décoché, la clé est absente du $request
         $validated['is_visible'] = $request->has('is_visible');
         $validated['is_featured'] = $request->has('is_featured');
+        
+        // 4. Mise à jour du slug et des données textuelles
+        $validated['slug'] = Str::slug($request->name);
 
-        // Gestion de l'image : on ne remplace que si un nouveau fichier est envoyé
+        // 5. Gestion de l'image principale
         if ($request->hasFile('featured_image')) {
             $path = $request->file('featured_image')->store('products', 'public');
             $validated['featured_image'] = $path;
         }
 
-        // Mise à jour des données
+        // 6. Sauvegarde des modifications du produit
         $product->update($validated);
+
+        // 7. Ajout de nouvelles images à la galerie via la fonction isolée
+        if ($request->hasFile('images')) {
+            $this->uploadProductImages($product, $request->file('images'));
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès');
     }
@@ -117,7 +129,7 @@ class ProductController extends Controller
         }
 
         // 3. Création du produit avec tous tes champs spécifiques
-        Product::create([
+        $product = Product::create([
             'name' => $request->name,
             'slug' => \Illuminate\Support\Str::slug($request->name),
             'sku' => $request->sku,
@@ -134,7 +146,31 @@ class ProductController extends Controller
             'is_featured' => $request->has('is_featured'),
         ]);
 
-        // 4. Redirection avec message Flash
+        // 4. Traitement de la galerie via la fonction isolée
+        if ($request->hasFile('images')) {
+            $this->uploadProductImages($product, $request->file('images'));
+        }
+
+        // 5. Redirection avec message Flash
         return redirect()->route('admin.products.index')->with('success', 'Produit créé !');
     }
+
+    /**
+     * FONCTION ISOLÉE : Gestion technique de la galerie
+     */
+    private function uploadProductImages(Product $product, array $files)
+    {
+        // On récupère le dernier sort_order pour incrémenter correctement
+        $lastOrder = $product->images()->max('sort_order') ?? -1;
+
+        foreach ($files as $index => $file) {
+            $path = $file->store('products/gallery', 'public');
+
+            $product->images()->create([
+                'path' => $path,
+                'sort_order' => $lastOrder + $index + 1
+            ]);
+        }
+    }
+
 }
